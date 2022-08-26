@@ -14,23 +14,23 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly StoreContext _ctx;
-        public ProductsController(StoreContext ctx)
+        private readonly ProductRepository _Repo;
+        public ProductsController(ProductRepository Repo)
         {
-            this._ctx=ctx;
+            this._Repo=Repo;
         }
         
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var prod=await _ctx.Products.ToListAsync();
+            var prod=await _Repo.GetProductsAsync();
             return Ok(prod);
         }
 
          [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-          return await _ctx.Products.FindAsync(id);
+          return await _Repo.GetProductByIdAsync(id);
         }
     }
 }
