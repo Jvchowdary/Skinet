@@ -7,6 +7,7 @@ using Core.Entities;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Core.Interfaces;
 
 namespace API.Controllers
 {
@@ -14,10 +15,10 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ProductRepository _Repo;
-        public ProductsController(ProductRepository Repo)
+        private readonly IProductRepository _Repo;
+        public ProductsController(IProductRepository Repo)
         {
-            this._Repo=Repo;
+            _Repo=Repo;
         }
         
         [HttpGet]
