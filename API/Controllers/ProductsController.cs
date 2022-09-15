@@ -8,12 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
 using Core.Specifications;
+using API.Errors;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class ProductsController : BaseApiController
     {
        private readonly IGenericRepository<Product> _ProdRepo;
        private readonly IGenericRepository<ProductBrand> _ProductBrand;
@@ -37,6 +36,7 @@ namespace API.Controllers
         }
 
          [HttpGet("{id}")]
+         [ProducesResponseType(typeof(ApiResponse),StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
            // var spec=new ProductsWithTypesAndBrands(id);

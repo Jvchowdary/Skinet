@@ -14,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using API.Middleware;
+using API.Extensions; 
+using Microsoft.AspNetCore.Cors;
 
 namespace API
 {
@@ -28,31 +31,39 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IProductRepository,ProductRepository>();
-            services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            services.AddApplicaitonServices();
             services.AddControllers();
             services.AddDbContext<StoreContext>(x=>
                 x.UseSqlite(_Configuration.GetConnectionString("DefaultConnection")));
+    
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
             });
+            // services.AddCors(op=>
+            // {
+            //     op.AddPolicy("CorsPolicy",Policy=>{
+            //         Policy.AllowAnyHeader().AllowAnyMethod().WithOrigin("http://localhost:4200");
+            //     });
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleWare>();
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+             //   app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
             }
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
-
+            app.UseRouting(); 
+            app.UseCors("CorsPolicy");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
